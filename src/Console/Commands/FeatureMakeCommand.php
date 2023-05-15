@@ -8,6 +8,7 @@ use Lucid\Console\Command;
 use Lucid\Filesystem;
 use Lucid\Generators\FeatureGenerator;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 
 class FeatureMakeCommand extends SymfonyCommand
