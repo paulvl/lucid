@@ -8,7 +8,7 @@ use Lucid\Entities\Feature;
 
 class FeatureGenerator extends Generator
 {
-    public function generate($feature, $service, array $jobs = [])
+    public function generate($feature, $service, array $jobs = [], $pest = false)
     {
         $feature = Str::feature($feature);
         $service = Str::service($service);
@@ -48,7 +48,7 @@ class FeatureGenerator extends Generator
         $this->createFile($path, $content);
 
         // generate test file
-        $this->generateTestFile($feature, $service);
+        $this->generateTestFile($feature, $service, $pest);
 
         return new Feature(
             $feature,
@@ -70,12 +70,15 @@ class FeatureGenerator extends Generator
     /**
      * Generate the test file.
      *
-     * @param  string $feature
-     * @param  string $service
+     * @param string $feature
+     * @param string $service
+     * @param bool $pest
      */
-    private function generateTestFile($feature, $service)
+    private function generateTestFile($feature, $service, $pest = false)
     {
-    	$content = file_get_contents($this->getTestStub());
+        $stub = $pest ? $this->getPestTestStub() : $this->getTestStub();
+        $delimiter = $pest ? ' ' : '_';
+        $content = file_get_contents($stub);
 
     	$namespace = $this->findFeatureTestNamespace($service);
     	$featureClass = $this->classname($feature);
@@ -84,7 +87,7 @@ class FeatureGenerator extends Generator
 
     	$content = str_replace(
     		['{{namespace}}', '{{testclass}}', '{{feature}}', '{{feature_namespace}}'],
-    		[$namespace, $testClass, Str::snake(str_replace(DS, '', $feature)), $featureNamespace],
+    		[$namespace, $testClass, Str::snake(str_replace(DS, '', $feature), $delimiter), $featureNamespace],
     		$content
     	);
 
@@ -111,5 +114,15 @@ class FeatureGenerator extends Generator
     private function getTestStub()
     {
     	return __DIR__ . '/stubs/feature-test.stub';
+    }
+
+    /**
+     * Get the pest test stub file for the generator.
+     *
+     * @return string
+     */
+    private function getPestTestStub()
+    {
+    	return __DIR__ . '/stubs/feature-test-pest.stub';
     }
 }

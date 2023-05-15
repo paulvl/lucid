@@ -22,7 +22,7 @@ class OperationMakeCommand extends SymfonyCommand
      *
      * @var string
      */
-    protected $name = 'make:operation {--Q|queue}';
+    protected $name = 'make:operation {--Q|queue} {--P|pest}';
 
     /**
      * The console command description.
@@ -50,8 +50,9 @@ class OperationMakeCommand extends SymfonyCommand
         $service = Str::studly($this->argument('service'));
         $title = $this->parseName($this->argument('operation'));
         $isQueueable = $this->option('queue');
+        $pest = $this->option('pest');
         try {
-            $operation = $generator->generate($title, $service, $isQueueable);
+            $operation = $generator->generate($title, $service, $isQueueable, [], $pest);
 
             $this->info(
                 'Operation class '.$title.' created successfully.'.

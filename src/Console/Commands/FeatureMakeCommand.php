@@ -21,7 +21,7 @@ class FeatureMakeCommand extends SymfonyCommand
      *
      * @var string
      */
-    protected $name = 'make:feature';
+    protected $name = 'make:feature {--P|pest}';
 
     /**
      * The console command description.
@@ -48,9 +48,10 @@ class FeatureMakeCommand extends SymfonyCommand
         try {
             $service = Str::studly($this->argument('service'));
             $title = $this->parseName($this->argument('feature'));
+            $pest = $this->option('pest');
 
             $generator = new FeatureGenerator();
-            $feature = $generator->generate($title, $service);
+            $feature = $generator->generate($title, $service, [], $pest);
 
             $this->info(
                 'Feature class '.$feature->title.' created successfully.'.

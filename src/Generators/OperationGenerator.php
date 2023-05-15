@@ -8,7 +8,7 @@ use Lucid\Entities\Operation;
 
 class OperationGenerator extends Generator
 {
-    public function generate($operation, $service, $isQueueable = false, array $jobs = [])
+    public function generate($operation, $service, $isQueueable = false, array $jobs = [], $pest = false)
     {
         $operation = Str::operation($operation);
         $service = Str::service($service);
@@ -36,7 +36,7 @@ class OperationGenerator extends Generator
         $this->createFile($path, $content);
 
         // generate test file
-        $this->generateTestFile($operation, $service);
+        $this->generateTestFile($operation, $service, $pest);
 
         return new Operation(
             $operation,
@@ -53,10 +53,13 @@ class OperationGenerator extends Generator
      *
      * @param string $operation
      * @param string $service
+     * @param bool $pest
      */
-    private function generateTestFile($operation, $service)
+    private function generateTestFile($operation, $service, $pest = false)
     {
-        $content = file_get_contents($this->getTestStub());
+        $stub = $pest ? $this->getPestTestStub() : $this->getTestStub();
+        $delimiter = $pest ? ' ' : '_';
+        $content = file_get_contents($stub);
 
         $namespace = $this->findOperationTestNamespace($service);
         $operationNamespace = $this->findOperationNamespace($service)."\\$operation";
@@ -64,7 +67,7 @@ class OperationGenerator extends Generator
 
         $content = str_replace(
             ['{{namespace}}', '{{testclass}}', '{{operation}}', '{{operation_namespace}}'],
-            [$namespace, $testClass, Str::snake($operation), $operationNamespace],
+            [$namespace, $testClass, Str::snake($operation, $delimiter), $operationNamespace],
             $content
         );
 
@@ -97,6 +100,16 @@ class OperationGenerator extends Generator
     private function getTestStub()
     {
         return __DIR__ . '/stubs/operation-test.stub';
+    }
+
+    /**
+     * Get the pest test stub file for the generator.
+     *
+     * @return string
+     */
+    private function getPestTestStub()
+    {
+        return __DIR__ . '/stubs/operation-test-pest.stub';
     }
 
     /**

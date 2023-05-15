@@ -8,7 +8,7 @@ use Lucid\Entities\Job;
 
 class JobGenerator extends Generator
 {
-    public function generate($job, $domain, $isQueueable = false)
+    public function generate($job, $domain, $isQueueable = false, $pest = false)
     {
         $job = Str::job($job);
         $domain = Str::domain($domain);
@@ -33,7 +33,7 @@ class JobGenerator extends Generator
 
         $this->createFile($path, $content);
 
-        $this->generateTestFile($job, $domain);
+        $this->generateTestFile($job, $domain, $pest);
 
         return new Job(
             $job,
@@ -51,10 +51,13 @@ class JobGenerator extends Generator
      *
      * @param string $job
      * @param string $domain
+     * @param bool $pest
      */
-    private function generateTestFile($job, $domain)
+    private function generateTestFile($job, $domain, $pest = false)
     {
-        $content = file_get_contents($this->getTestStub());
+        $stub = $pest ? $this->getPestTestStub() : $this->getTestStub();
+        $delimiter = $pest ? ' ' : '_';
+        $content = file_get_contents($stub);
 
         $namespace = $this->findDomainJobsTestsNamespace($domain);
         $jobNamespace = $this->findDomainJobsNamespace($domain)."\\$job";
@@ -62,7 +65,7 @@ class JobGenerator extends Generator
 
         $content = str_replace(
             ['{{namespace}}', '{{testclass}}', '{{job}}', '{{job_namespace}}'],
-            [$namespace, $testClass, Str::snake($job), $jobNamespace],
+            [$namespace, $testClass, Str::snake($job, $delimiter), $jobNamespace],
             $content
         );
 
@@ -106,5 +109,15 @@ class JobGenerator extends Generator
     public function getTestStub()
     {
         return __DIR__ . '/stubs/job-test.stub';
+    }
+
+    /**
+     * Get the pest test stub file for the generator.
+     *
+     * @return string
+     */
+    public function getPestTestStub()
+    {
+        return __DIR__ . '/stubs/job-test-pest.stub';
     }
 }

@@ -22,7 +22,7 @@ class JobMakeCommand extends SymfonyCommand
      *
      * @var string
      */
-    protected $name = 'make:job {--Q|queue}';
+    protected $name = 'make:job {--Q|queue} {--P|pest}';
 
     /**
      * The console command description.
@@ -50,8 +50,9 @@ class JobMakeCommand extends SymfonyCommand
         $domain = Str::studly($this->argument('domain'));
         $title = $this->parseName($this->argument('job'));
         $isQueueable = $this->option('queue');
+        $pest = $this->option('pest');
         try {
-            $job = $generator->generate($title, $domain, $isQueueable);
+            $job = $generator->generate($title, $domain, $isQueueable, $pest);
 
             $this->info(
                 'Job class '.$title.' created successfully.'.
