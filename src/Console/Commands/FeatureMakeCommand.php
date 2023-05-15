@@ -77,6 +77,13 @@ class FeatureMakeCommand extends SymfonyCommand
         ];
     }
 
+    public function getOptions()
+    {
+        return [
+            ['pest', 'P', InputOption::VALUE_NONE, 'Whether a job pest is pest.'],
+        ];
+    }
+
     /**
      * Get the stub file for the generator.
      *

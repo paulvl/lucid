@@ -78,6 +78,7 @@ class OperationMakeCommand extends SymfonyCommand
     {
         return [
             ['queue', 'Q', InputOption::VALUE_NONE, 'Whether a operation is queueable or not.'],
+            ['pest', 'P', InputOption::VALUE_NONE, 'Whether a job pest is pest.'],
         ];
     }
 
